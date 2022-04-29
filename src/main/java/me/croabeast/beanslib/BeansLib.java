@@ -16,6 +16,7 @@ public abstract class BeansLib extends TextUtils {
      * @param plugin plugin's instance
      */
     public BeansLib(@NotNull JavaPlugin plugin) {
+        super(plugin);
         instance = plugin;
     }
 

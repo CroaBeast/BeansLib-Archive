@@ -2,7 +2,6 @@ package me.croabeast.beanslib.utilities;
 
 import com.google.common.collect.*;
 import me.clip.placeholderapi.*;
-import me.croabeast.beanslib.*;
 import me.croabeast.beanslib.terminals.*;
 import me.croabeast.iridiumapi.*;
 import net.md_5.bungee.api.chat.*;
@@ -10,6 +9,7 @@ import org.bukkit.*;
 import org.bukkit.command.*;
 import org.bukkit.configuration.*;
 import org.bukkit.entity.*;
+import org.bukkit.plugin.java.*;
 import org.jetbrains.annotations.*;
 
 import java.util.*;
@@ -21,10 +21,12 @@ import static net.md_5.bungee.api.chat.ClickEvent.Action.*;
 
 public abstract class TextUtils extends TextKeys {
 
+    private final JavaPlugin plugin;
     private final ActionBar actionBar;
     private final TitleMngr titleMngr;
 
-    public TextUtils() {
+    public TextUtils(JavaPlugin instance) {
+        plugin = instance;
         actionBar = new ActionBar();
         titleMngr = new TitleMngr();
     }
@@ -45,7 +47,7 @@ public abstract class TextUtils extends TextKeys {
     public void doLog(@Nullable CommandSender sender, String... lines) {
         if (sender instanceof Player) playerLog((Player) sender, lines);
         for (String s : lines) if (s != null)
-            BeansLib.getPlugin().getLogger().info(colorLogger(s.replace(langPrefixKey(), "")));
+            plugin.getLogger().info(colorLogger(s.replace(langPrefixKey(), "")));
     }
 
     public void doLog(String... lines) {
