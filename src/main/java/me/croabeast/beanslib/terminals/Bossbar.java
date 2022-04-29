@@ -20,7 +20,7 @@ import static me.croabeast.beanslib.utilities.TextUtils.*;
 
 public class Bossbar {
 
-    private final JavaPlugin plugin = BeansLib.getPlugin();
+    private final JavaPlugin plugin;
 
     private final Player player;
     private String line;
@@ -39,10 +39,12 @@ public class Bossbar {
     /**
      * Bossbar message constructor if using the PATTERN
      * to recognize a valid bossbar message.
+     * @param plugin the plugin's instance
      * @param player the player that will see the bossbar
      * @param line the bossbar message to validate
      */
-    public Bossbar(Player player, @Nullable String line) {
+    public Bossbar(JavaPlugin plugin, Player player, @Nullable String line) {
+        this.plugin = plugin;
         this.player = player;
         line = line == null ? "" : line;
 
@@ -86,6 +88,7 @@ public class Bossbar {
     /**
      * Bossbar message constructor if you are setting every
      * parameter for the bossbar to be created.
+     * @param plugin the plugin's instance
      * @param player the player that will see the bossbar
      * @param line the message that will be displayed
      * @param color the color of the bossbar
@@ -93,7 +96,8 @@ public class Bossbar {
      * @param seconds the seconds that the bossbar will be visible
      * @param progress if the bossbar will decrease overtime
      */
-    public Bossbar(Player player, @Nullable String line, @Nullable String color, @Nullable String style, int seconds, boolean progress) {
+    public Bossbar(JavaPlugin plugin, Player player, @Nullable String line, @Nullable String color, @Nullable String style, int seconds, boolean progress) {
+        this.plugin = plugin;
         this.player = player;
         this.line = line;
 

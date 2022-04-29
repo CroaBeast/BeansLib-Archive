@@ -21,6 +21,7 @@ public class MyPlugin extends JavaPlugin {
     public void onEnable() {
         myTextClass = new MyTextClass(this);
         staticMyTextClass = new MyTextClass(this);
+        myTextClass.doLog("hello world");
     }
 
     @Override

@@ -322,7 +322,7 @@ public abstract class TextUtils extends TextKeys {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
             }
             else if (prefix.matches("(?i)" + actionBarKey())) sendActionBar(target, line);
-            else if (prefix.matches("(?i)" + bossbarKey())) new Bossbar(target, line).show();
+            else if (prefix.matches("(?i)" + bossbarKey())) new Bossbar(plugin, target, line).show();
             else target.spigot().sendMessage(stringToJson(sender, line));
         }
         else target.spigot().sendMessage(stringToJson(sender, input));
