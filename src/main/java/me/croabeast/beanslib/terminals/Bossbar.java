@@ -1,6 +1,5 @@
 package me.croabeast.beanslib.terminals;
 
-import me.croabeast.beanslib.BeansLib;
 import me.croabeast.iridiumapi.IridiumAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.boss.BarColor;
@@ -16,7 +15,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static me.croabeast.beanslib.utilities.TextUtils.*;
+import static me.croabeast.beanslib.BeansLib.*;
 
 public class Bossbar {
 

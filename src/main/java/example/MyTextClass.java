@@ -1,6 +1,7 @@
 package example;
 
 import me.croabeast.beanslib.BeansLib;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 public class MyTextClass extends BeansLib {
@@ -12,13 +13,17 @@ public class MyTextClass extends BeansLib {
     private final MyPlugin myPlugin;
 
     public MyTextClass(MyPlugin plugin) {
-        super(plugin);
         this.myPlugin = plugin;
     }
 
     /*
      * You can also override other methods if you want it.
      */
+
+    @Override
+    protected @NotNull JavaPlugin getPlugin() {
+        return myPlugin;
+    }
 
     @Override
     public @NotNull String langPrefixKey() {

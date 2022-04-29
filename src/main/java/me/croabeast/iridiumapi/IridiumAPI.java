@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static me.croabeast.beanslib.utilities.TextUtils.*;
+import static me.croabeast.beanslib.BeansLib.*;
 
 public class IridiumAPI {
 
