@@ -12,19 +12,19 @@ public abstract class TextKeys {
      * A prefix used in the main pattern to identify the event.
      * This can't be overridden.
      */
-    protected final String JSON_PREFIX = "(hover|run|suggest|url)=\\[(.+?)]";
+    protected static final String JSON_PREFIX = "(hover|run|suggest|url)=\\[(.+?)]";
 
     /**
      * The main pattern to identify the JSON message.
      * This can't be overridden.
      */
-    protected final Pattern JSON_PATTERN = Pattern.compile("(?i)<"
+    protected static final Pattern JSON_PATTERN = Pattern.compile("(?i)<"
             + JSON_PREFIX + "(\\|" + JSON_PREFIX + ")?>(.+?)</text>");
 
     /**
      * Check if a logger line can be colored or not.
      */
-    protected final boolean COLOR_SUPPORT =
+    protected static final boolean COLOR_SUPPORT =
             majorVersion() >= 12 && !serverFork().split(" ")[0].matches("(?i)Spigot");
 
     /**
@@ -189,7 +189,7 @@ public abstract class TextKeys {
      * @return json key
      */
     @NotNull
-    public String getJsonKey() {
+    public String jsonKey() {
         return "json";
     }
 
@@ -199,7 +199,7 @@ public abstract class TextKeys {
      * @return action bar key
      */
     @NotNull
-    public String getActionBarKey() {
+    public String actionBarKey() {
         return "action-bar";
     }
 
@@ -210,7 +210,7 @@ public abstract class TextKeys {
      * @return bossbar key
      */
     @NotNull
-    public String getBossbarKey() {
+    public String bossbarKey() {
         return "^bossbar";
     }
 
@@ -228,7 +228,7 @@ public abstract class TextKeys {
      * @return the main pattern
      */
     @NotNull
-    public Pattern getTextPattern() {
+    public Pattern textPattern() {
         String first = Pattern.quote(startDelimiter()), second = Pattern.quote(endDelimiter());
         return Pattern.compile("(" + first + "(.[^" + first + "][^" + second + "]+)" + second + ")(.+)");
     }

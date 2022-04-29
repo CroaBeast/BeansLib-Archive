@@ -53,7 +53,7 @@ public abstract class TextUtils extends TextKeys {
     }
 
     public String stripPrefix(String line) {
-        Matcher matcher = getTextPattern().matcher(line);
+        Matcher matcher = textPattern().matcher(line);
         line = removeSpace(line);
 
         return (matcher.find() && isStripPrefix()) ?
@@ -103,7 +103,7 @@ public abstract class TextUtils extends TextKeys {
         return IridiumAPI.process(parsePAPI(player, parseChars(message)));
     }
 
-    public List<String> toList(@Nullable ConfigurationSection section, String path) {
+    public static List<String> toList(@Nullable ConfigurationSection section, String path) {
         if (section == null) return new ArrayList<>();
         return  section.isList(path) ? section.getStringList(path) :
                 Lists.newArrayList(section.getString(path));
@@ -165,14 +165,14 @@ public abstract class TextUtils extends TextKeys {
      * Check if the line has a valid json format. Usage:
      * <pre> if (IS_JSON.apply(stringInput)) doSomethingIdk();</pre>
      */
-    public final Function<String, Boolean> IS_JSON = s -> JSON_PATTERN.matcher(s).find();
+    public static final Function<String, Boolean> IS_JSON = s -> JSON_PATTERN.matcher(s).find();
 
     /**
      * Strips the JSON format from a line.
      * @param line the line to strip.
      * @return the stripped line.
      */
-    public String stripJson(String line) {
+    public static String stripJson(String line) {
         return line.replaceAll("(?i)</?(text|hover|run|suggest|url)" +
                 "(=\\[(.+?)](\\|(hover|run|suggest|url)=\\[(.+?)])?)?>", "");
     }
@@ -182,7 +182,7 @@ public abstract class TextUtils extends TextKeys {
      * @param line the line to convert.
      * @return the requested component.
      */
-    private TextComponent toComponent(String line) {
+    private static TextComponent toComponent(String line) {
         return new TextComponent(TextComponent.fromLegacyText(line));
     }
 
@@ -293,7 +293,7 @@ public abstract class TextUtils extends TextKeys {
 
     public void sendMessage(@Nullable Player target, @NotNull Player sender, String input) {
         if (target == null) target = sender;
-        Matcher matcher = getTextPattern().matcher(input);
+        Matcher matcher = textPattern().matcher(input);
 
         if (matcher.find()) {
             String line = colorize(sender, removeSpace(matcher.group(3)));
@@ -315,12 +315,12 @@ public abstract class TextUtils extends TextKeys {
                 sendTitle(target, line.split(lineSeparator()),
                         defaultTitleTicks()[0], time, defaultTitleTicks()[2]);
             }
-            else if (prefix.matches("(?i)" + getJsonKey())) {
+            else if (prefix.matches("(?i)" + jsonKey())) {
                 String cmd = "minecraft:tellraw " + target.getName() + " " + line;
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
             }
-            else if (prefix.matches("(?i)" + getActionBarKey())) sendActionBar(target, line);
-            else if (prefix.matches("(?i)" + getBossbarKey())) new Bossbar(target, line).display();
+            else if (prefix.matches("(?i)" + actionBarKey())) sendActionBar(target, line);
+            else if (prefix.matches("(?i)" + bossbarKey())) new Bossbar(target, line).show();
             else target.spigot().sendMessage(stringToJson(sender, line));
         }
         else target.spigot().sendMessage(stringToJson(sender, input));

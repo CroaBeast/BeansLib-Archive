@@ -31,8 +31,8 @@ public class Bossbar {
     private Integer time = null;
     private Boolean progress = null;
 
-    private final Pattern PATTERN =
-            Pattern.compile("(?i)\\[BOSSBAR(:(.+?)(:(.+?)(:(\\d+)(:(true|false))?)?)?)?](.+)");
+    protected final Pattern PATTERN = Pattern.compile(
+            "(?i)\\[BOSSBAR(:(.+?)(:(.+?)(:(\\d+)(:(true|false))?)?)?)?](.+)");
 
     protected static Map<Player, BossBar> bossbarMap = new HashMap<>();
 
@@ -42,10 +42,45 @@ public class Bossbar {
      * @param player the player that will see the bossbar
      * @param line the bossbar message to validate
      */
-    public Bossbar(Player player, String line) {
+    public Bossbar(Player player, @Nullable String line) {
         this.player = player;
-        this.line = line;
-        register();
+        line = line == null ? "" : line;
+
+        Matcher matcher = PATTERN.matcher(line);
+        if (matcher.find()) {
+            try {
+                color = BarColor.valueOf(matcher.group(2).toUpperCase());
+            } catch (Exception e) {
+                color = null;
+            }
+
+            try {
+                style = BarStyle.valueOf(matcher.group(4).toUpperCase());
+            } catch (Exception e) {
+                style = null;
+            }
+
+            try {
+                time = Integer.parseInt(matcher.group(6)) * 20;
+            } catch (Exception e) {
+                style = null;
+            }
+
+            try {
+                progress = Boolean.valueOf(matcher.group(8));
+            } catch (Exception e) {
+                progress = null;
+            }
+
+            this.line = matcher.group(9);
+        }
+
+        if (color == null) color = BarColor.WHITE;
+        if (style == null) style = BarStyle.SOLID;
+        if (time == null) time = 3 * 20;
+        if (progress == null) progress = false;
+
+        this.line = IridiumAPI.process(parsePAPI(player, line));
     }
 
     /**
@@ -83,53 +118,7 @@ public class Bossbar {
         if (this.style == null) this.style = BarStyle.SOLID;
 
         if (line == null) line = "";
-        line = replaceInsensitiveEach(line, new String[] {"player", "world"},
-                new String[] {player.getName(), player.getWorld().getName()});
         this.line = IridiumAPI.process(parsePAPI(player, line));
-    }
-
-    /**
-     * Registers the variables in the default constructor.
-     */
-    private void register() {
-        Matcher matcher = PATTERN.matcher(line);
-        if (matcher.find()) {
-            try {
-                color = BarColor.valueOf(matcher.group(2).toUpperCase());
-            } catch (Exception e) {
-                color = null;
-            }
-
-            try {
-                style = BarStyle.valueOf(matcher.group(4).toUpperCase());
-            } catch (Exception e) {
-                style = null;
-            }
-
-            try {
-                time = Integer.parseInt(matcher.group(6)) * 20;
-            } catch (Exception e) {
-                style = null;
-            }
-
-            try {
-                progress = Boolean.valueOf(matcher.group(8));
-            } catch (Exception e) {
-                progress = null;
-            }
-
-            this.line = matcher.group(9);
-        }
-
-        if (color == null) color = BarColor.WHITE;
-        if (style == null) style = BarStyle.SOLID;
-        if (time == null) time = 3 * 20;
-        if (progress == null) progress = false;
-
-        if (line == null) line = "";
-        line = replaceInsensitiveEach(line, new String[] {"player", "world"},
-                new String[] {player.getName(), player.getWorld().getName()});
-        line = IridiumAPI.process(parsePAPI(player, line));
     }
 
     /**
@@ -152,7 +141,9 @@ public class Bossbar {
             @Override
             public void run() {
                 bar.setProgress(percentage[0]);
-                if (percentage[0] > 0.0) percentage[0] -= time;
+                if (percentage[0] > 0.0)
+                    percentage[0] -= time;
+
                 if (percentage[0] <= 0.0) {
                     unregister();
                     cancel();
@@ -164,7 +155,7 @@ public class Bossbar {
     /**
      * Displays the bossbar message to the player.
      */
-    public void display() {
+    public void show() {
         bar = Bukkit.createBossBar(line, color, style);
         bar.setProgress(1.0D);
 
