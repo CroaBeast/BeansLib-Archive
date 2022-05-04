@@ -185,7 +185,7 @@ public abstract class TextKeys {
 
     /**
      * <strong>[MESSAGE TYPE KEY]</strong>
-     * <p> The json key to search if you want to json a title message.
+     * <p> The json key to search if you want to send a title message.
      * @return json key
      */
     @NotNull
@@ -195,7 +195,7 @@ public abstract class TextKeys {
 
     /**
      * <strong>[MESSAGE TYPE KEY]</strong>
-     * <p> The action bar to search if you want to json a action-bar message.
+     * <p> The action bar to search if you want to send a action-bar message.
      * @return action bar key
      */
     @NotNull
@@ -211,7 +211,7 @@ public abstract class TextKeys {
      */
     @NotNull
     public String bossbarKey() {
-        return "^bossbar";
+        return "bossbar(.+)?";
     }
 
     /**
@@ -229,7 +229,8 @@ public abstract class TextKeys {
      */
     @NotNull
     public Pattern textPattern() {
-        String first = Pattern.quote(startDelimiter()), second = Pattern.quote(endDelimiter());
-        return Pattern.compile("(" + first + "(.[^" + first + "][^" + second + "]+)" + second + ")(.+)");
+        String start = Pattern.quote(startDelimiter()), end = Pattern.quote(endDelimiter());
+        return Pattern.compile("(" + start + "(" + titleKey() + "|" +
+                jsonKey() + "|" + bossbarKey() + "|" + actionBarKey() + ")" + end + ")(.+)");
     }
 }
