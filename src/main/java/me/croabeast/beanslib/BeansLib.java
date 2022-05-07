@@ -406,12 +406,12 @@ public abstract class BeansLib extends TextKeys {
 
         if (matcher.find()) {
             String prefix = removeSpace(matcher.group(1).substring(1, matcher.group(1).length() - 1));
-            String line = colorize(sender, removeSpace(input.substring(prefix.length() + 1)));
+            String line = colorize(sender, removeSpace(input.substring(prefix.length() + 2)));
 
             if (prefix.matches("(?i)" + titleKey())) {
                 Matcher timeMatch = Pattern.compile("(?i)" + titleKey()).matcher(prefix);
-                String timeString;
 
+                String timeString;
                 try {
                     timeString = timeMatch.find() ? timeMatch.group(1).substring(1) : null;
                 } catch (Exception e) {
