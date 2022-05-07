@@ -23,8 +23,10 @@ public class IridiumAPI {
     private static final List<String> SPECIAL_COLORS =
             Arrays.asList("&l", "&n", "&o", "&k", "&m", "§l", "§n", "§o", "§k", "§m");
 
-    private static final String COLOR_MATCHER = "(?i)[&§][a-f\\dlnokmr]|</?[gr](:\\d{3,6})?>|" +
-            "\\{#[\\dA-F]{6}}|<#[\\dA-F]{6}>|&#[\\dA-F]{6}|#[\\dA-F]{6}";
+    private static final String
+            BUKKIT_REGEX = "[&§][a-f\\dk-or]", GRADIENT_REGEX = "</?[gr](:\\d{3,6})?>",
+            RGB_REGEX = "\\{#[\\dA-F]{6}}|<#[\\dA-F]{6}>|&#[\\dA-F]{6}|#[\\dA-F]{6}",
+            COLOR_REGEX = "(?i)" + BUKKIT_REGEX + "|" + GRADIENT_REGEX + "|" + RGB_REGEX;
 
     private static final Map<Color, ChatColor> COLORS = ImmutableMap.<Color, ChatColor>builder()
             .put(new Color(0), ChatColor.getByChar('0'))
@@ -89,12 +91,12 @@ public class IridiumAPI {
 
     @NotNull
     public static String stripRGB(@NotNull String string) {
-        return string.replaceAll(COLOR_MATCHER, "");
+        return string.replaceAll("(?i)" + RGB_REGEX + "|" + GRADIENT_REGEX, "");
     }
 
     @NotNull
     public static String stripAll(@NotNull String string) {
-        return string.replaceAll(COLOR_MATCHER, "");
+        return string.replaceAll(COLOR_REGEX, "");
     }
 
     @NotNull
@@ -103,24 +105,20 @@ public class IridiumAPI {
         String[] characters = source.split("");
 
         if (StringUtils.isBlank(source)) return source;
-
         int outIndex = 0;
-        try {
-            for (int i = 0; i < characters.length; i++) {
-                if (characters[i].matches("[&§]") && i + 1 < characters.length) {
-                    if (!characters[i + 1].equals("r")) {
-                        specials.append(characters[i]);
-                        specials.append(characters[i + 1]);
-                    }
-                    else specials.setLength(0);
-                    i++;
-                }
-                else builder.append(colors[outIndex++])
+
+        for (int i = 0; i < characters.length; i++) {
+            if (!characters[i].matches("[&§]") || i + 1 >= characters.length)
+                builder.append(colors[outIndex++])
                         .append(specials).append(characters[i]);
+            else {
+                if (!characters[i + 1].equals("r")) {
+                    specials.append(characters[i]);
+                    specials.append(characters[i + 1]);
+                }
+                else specials.setLength(0);
+                i++;
             }
-        }
-        catch (IndexOutOfBoundsException e) {
-            return source;
         }
 
         return builder.toString();

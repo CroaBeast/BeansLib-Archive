@@ -230,7 +230,7 @@ public abstract class TextKeys {
     @NotNull
     public Pattern textPattern() {
         String start = Pattern.quote(startDelimiter()), end = Pattern.quote(endDelimiter());
-        return Pattern.compile("(" + start + "(" + titleKey() + "|" +
+        return Pattern.compile("(?i)(" + start + "(" + titleKey() + "|" +
                 jsonKey() + "|" + bossbarKey() + "|" + actionBarKey() + ")" + end + ")(.+)");
     }
 }
