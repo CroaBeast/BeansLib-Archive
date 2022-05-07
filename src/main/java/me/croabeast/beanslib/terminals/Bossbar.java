@@ -158,7 +158,7 @@ public class Bossbar {
     /**
      * Displays the bossbar message to the player.
      */
-    public void show() {
+    public void display() {
         bar = Bukkit.createBossBar(line, color, style);
         bar.setProgress(1.0D);
 

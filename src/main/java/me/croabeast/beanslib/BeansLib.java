@@ -413,13 +413,18 @@ public abstract class BeansLib extends TextKeys {
                 String timeString;
 
                 try {
-                    timeString = timeMatch.find() ? timeMatch.group(1) : null;
+                    timeString = timeMatch.find() ? timeMatch.group(1).substring(1) : null;
                 } catch (Exception e) {
                     timeString = null;
                 }
 
-                int time = timeString == null ? defaultTitleTicks()[1] :
-                        Integer.parseInt(timeString) * 20;
+                int time;
+                try {
+                    time = timeString == null ? defaultTitleTicks()[1] :
+                            Integer.parseInt(timeString) * 20;
+                } catch (Exception e) {
+                    time = defaultTitleTicks()[1];
+                }
 
                 sendTitle(target, line.split(lineSeparator()),
                         defaultTitleTicks()[0], time, defaultTitleTicks()[2]);
@@ -429,7 +434,8 @@ public abstract class BeansLib extends TextKeys {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
             }
             else if (prefix.matches("(?i)" + actionBarKey())) sendActionBar(target, line);
-            else if (prefix.matches("(?i)" + bossbarKey())) new Bossbar(getPlugin(), target, line).show();
+            else if (prefix.matches("(?i)" + bossbarKey()))
+                new Bossbar(getPlugin(), target, line).display();
             else target.spigot().sendMessage(stringToJson(sender, line));
         }
         else target.spigot().sendMessage(stringToJson(sender, input));
