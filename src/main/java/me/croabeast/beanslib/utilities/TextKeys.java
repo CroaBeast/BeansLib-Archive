@@ -6,6 +6,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.regex.Pattern;
 
+/**
+ * The keys for the BeansLib class.
+ *
+ * @author CroaBeast
+ * @since 1.0
+ */
 public abstract class TextKeys {
 
     /**
@@ -28,19 +34,19 @@ public abstract class TextKeys {
             majorVersion() >= 12 && !serverFork().split(" ")[0].matches("(?i)Spigot");
 
     /**
-     * Get the spigot-format server version and fork.
-     * @return server version and fork
+     * Gets the server's version. Example: 1.8.8, 1.16.5
+     * @return server's version
      */
-    private static String serverFormat() {
+    private static String serverVersion() {
         return Bukkit.getBukkitVersion().split("-")[0];
     }
 
     /**
-     * Gets the server's fork. Example: Spigot, Paper, Purpur.
-     * @return server's fork
+     * Get the spigot-format server version and fork.
+     * @return server version and fork
      */
     public static String serverFork() {
-        return Bukkit.getVersion().split("-")[1] + " " + serverFormat();
+        return Bukkit.getVersion().split("-")[1] + " " + serverVersion();
     }
 
     /**
@@ -49,7 +55,7 @@ public abstract class TextKeys {
      * @return server's major version
      */
     public static int majorVersion() {
-        return Integer.parseInt(serverFormat().split("\\.")[1]);
+        return Integer.parseInt(serverVersion().split("\\.")[1]);
     }
 
     /**

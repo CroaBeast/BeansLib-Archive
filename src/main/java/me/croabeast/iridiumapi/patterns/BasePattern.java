@@ -9,9 +9,11 @@ public abstract class BasePattern {
     protected Pattern gradientPattern() {
         return Pattern.compile("(?i)<G:(" + HEX + ")>(.+?)</G:(" + HEX + ")>");
     }
+
     protected Pattern rainbowPattern() {
         return Pattern.compile("(?i)<R:(\\d{1,3})>(.+?)</R>");
     }
+
     protected Pattern solidPattern() {
         return Pattern.compile("(?i)\\{#(" + HEX + ")}|<#(" + HEX + ")>|&#(" + HEX + ")|#(" + HEX + ")");
     }

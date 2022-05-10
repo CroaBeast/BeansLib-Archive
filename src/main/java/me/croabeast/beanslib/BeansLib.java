@@ -1,6 +1,7 @@
 package me.croabeast.beanslib;
 
 import com.google.common.collect.*;
+import com.loohp.interactivechat.api.InteractiveChatAPI;
 import me.clip.placeholderapi.*;
 import me.croabeast.beanslib.terminals.*;
 import me.croabeast.beanslib.utilities.*;
@@ -20,6 +21,13 @@ import java.util.regex.*;
 import static me.croabeast.iridiumapi.IridiumAPI.*;
 import static net.md_5.bungee.api.chat.ClickEvent.Action.*;
 
+/**
+ * The main class of the Lib.
+ * It has a lot of useful text-related methods.
+ *
+ * @author CroaBeast
+ * @since 1.0
+ */
 public abstract class BeansLib extends TextKeys {
 
     /*
@@ -308,6 +316,24 @@ public abstract class BeansLib extends TextKeys {
     }
 
     /**
+     * Parse InteractiveChat placeholders for using it the Json message.
+     * @param player the requested player
+     * @param line the line to parse
+     * @return the line with the parsed placeholders.
+     */
+    public static String parseInteractiveChat(Player player, String line) {
+        if (Bukkit.getPluginManager().isPluginEnabled("InteractiveChat"))
+            try {
+                return InteractiveChatAPI.markSender(line, player.getUniqueId());
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                return line;
+            }
+        else return line;
+    }
+
+    /**
      * Converts a line to a {@link BaseComponent} array and use it to send a json message.
      * <p>It uses the {@link TextKeys#JSON_PATTERN} to applies click and hover events.
      * @param player a player
@@ -315,7 +341,9 @@ public abstract class BeansLib extends TextKeys {
      * @return the converted json object
      */
     public BaseComponent[] stringToJson(Player player, String line) {
+        line = parseInteractiveChat(player, line);
         line = centeredText(player, line);
+
         List<BaseComponent> components = new ArrayList<>();
         final Matcher match = JSON_PATTERN.matcher(line);
         int lastEnd = 0;
@@ -356,7 +384,7 @@ public abstract class BeansLib extends TextKeys {
      */
     public BaseComponent[] stringToJson(Player player, String line, @Nullable String click, List<String> hover) {
         if (IS_JSON.apply(line)) line = stripJson(line);
-        line = centeredText(player, line);
+        line = centeredText(player, parseInteractiveChat(player, line));
 
         List<BaseComponent> components = new ArrayList<>();
         final TextComponent comp = toComponent(line);

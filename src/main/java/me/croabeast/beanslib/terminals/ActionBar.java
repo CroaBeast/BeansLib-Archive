@@ -26,12 +26,13 @@ public class ActionBar implements Reflection {
     private GetActionBar oldActionBar() {
         return (player, message) -> {
             try {
-                Constructor<?> constructor = getNMSClass("PacketPlayOutChat").getConstructor(getNMSClass("IChatBaseComponent"), byte.class);
-                Object icbc = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", String.class).invoke(null, "{\"text\":\"" + message + "\"}");
-                Object packet = constructor.newInstance(icbc, (byte) 2);
-                Object entityPlayer = player.getClass().getMethod("getHandle").invoke(player);
-                Object playerConnection = entityPlayer.getClass().getField("playerConnection").get(entityPlayer);
-                playerConnection.getClass().getMethod("sendPacket", getNMSClass("Packet")).invoke(playerConnection, packet);
+                Class<?> chat = getNMSClass("IChatBaseComponent");
+                Constructor<?> constructor = getNMSClass("PacketPlayOutChat").getConstructor(chat, byte.class);
+                message = "{\"text\":\"" + message + "\"}";
+
+                Object icbc = chat.getDeclaredClasses()[0].getMethod("a", String.class).invoke(null, message),
+                        packet = constructor.newInstance(icbc, (byte) 2);
+                sendPacket(player, packet);
             }
             catch (Exception e) {
                 e.printStackTrace();

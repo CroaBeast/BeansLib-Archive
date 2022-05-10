@@ -7,9 +7,9 @@ public interface Reflection {
 
     default void sendPacket(Player player, Object packet) {
         try {
-            Object handle  = player.getClass().getMethod("getHandle").invoke(player);
-            Object playerConnection = handle.getClass().getField("playerConnection").get(handle);
-            playerConnection.getClass().getMethod("sendPacket", getNMSClass("Packet")).invoke(playerConnection, packet);
+            Object handler  = player.getClass().getMethod("getHandle").invoke(player),
+                    connect = handler.getClass().getField("playerConnection").get(handler);
+            connect.getClass().getMethod("sendPacket", getNMSClass("Packet")).invoke(connect, packet);
         }
         catch (Exception e) {
             e.printStackTrace();

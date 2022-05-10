@@ -68,7 +68,7 @@ public class TitleMngr implements Reflection {
         };
     }
 
-    public GetTitle newTitle() {
+    private GetTitle newTitle() {
         return Player::sendTitle;
     }
 }

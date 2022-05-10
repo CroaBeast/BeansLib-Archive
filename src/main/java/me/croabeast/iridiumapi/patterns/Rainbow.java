@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 
 public class Rainbow extends BasePattern {
 
+    @Override
     public String process(String string) {
         Matcher matcher = rainbowPattern().matcher(string);
         while (matcher.find()) {

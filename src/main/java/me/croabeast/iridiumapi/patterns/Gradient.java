@@ -12,6 +12,7 @@ public class Gradient extends BasePattern {
         return new Color(Integer.parseInt(line, 16));
     }
 
+    @Override
     public String process(String string) {
         Matcher matcher = gradientPattern().matcher(string);
         while (matcher.find()) {

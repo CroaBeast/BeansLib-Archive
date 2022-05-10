@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 
 public class SolidColor extends BasePattern {
 
+    @Override
     public String process(String string) {
         Matcher matcher = solidPattern().matcher(string);
         while (matcher.find()) {
