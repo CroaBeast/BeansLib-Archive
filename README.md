@@ -34,7 +34,7 @@ Maven - add to pom.xml
         <groupId>com.github.CroaBeast</groupId>
         <artifactId>BeansLib</artifactId>
         <!--Replace version with the latest release version-->
-        <version>VERSION_TAG</version>
+        <version>RELEASE_TAG</version>
     </dependency>
 </dependencies>
 ```
@@ -49,6 +49,6 @@ allprojects {
 ```
 ```
 dependencies {
-    implementation 'com.github.CroaBeast:BeansLib:VERSION_TAG'
+    implementation 'com.github.CroaBeast:BeansLib:RELEASE_TAG'
 }
 ```
