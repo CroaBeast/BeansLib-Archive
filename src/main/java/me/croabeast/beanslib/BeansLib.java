@@ -52,7 +52,7 @@ public abstract class BeansLib extends TextKeys {
      * @return the formatted console message
      */
     private String colorLogger(@NotNull String line) {
-        return stripJson(COLOR_SUPPORT ? process(line) : stripAll(line));
+        return stripJson(COLOR_SUPPORT ? process(line, !fixColorLogger()) : stripAll(line));
     }
 
     /**
@@ -341,36 +341,7 @@ public abstract class BeansLib extends TextKeys {
      * @return the converted json object
      */
     public BaseComponent[] stringToJson(Player player, String line) {
-        line = parseInteractiveChat(player, line);
-        line = centeredText(player, line);
-
-        List<BaseComponent> components = new ArrayList<>();
-        final Matcher match = JSON_PATTERN.matcher(line);
-        int lastEnd = 0;
-
-        while (match.find()) {
-            final String type = match.group(1), input = match.group(2), extra = match.group(3),
-                    type2 = match.group(4), input2 = match.group(5), text = match.group(6),
-                    before = line.substring(lastEnd, match.start());
-
-            boolean isExtra = extra != null && extra.matches("(?i)\\|" + JSON_PREFIX);
-
-            components.addAll(Arrays.asList(TextComponent.fromLegacyText(before)));
-            final TextComponent comp = toComponent(text);
-
-            addEvent(player, comp, type, input);
-            if (isExtra) addEvent(player, comp, type2, input2);
-
-            components.add(comp);
-            lastEnd = match.end();
-        }
-
-        if (lastEnd < (line.length() - 1)) {
-            final String after = line.substring(lastEnd);
-            components.addAll(Arrays.asList(TextComponent.fromLegacyText(after)));
-        }
-
-        return components.toArray(new BaseComponent[0]);
+        return stringToJson(player, line, null, new ArrayList<>());
     }
 
     /**
@@ -383,19 +354,45 @@ public abstract class BeansLib extends TextKeys {
      * @return the converted json object
      */
     public BaseComponent[] stringToJson(Player player, String line, @Nullable String click, List<String> hover) {
-        if (IS_JSON.apply(line)) line = stripJson(line);
+        boolean isComplex = click != null && !hover.isEmpty();
+        if (isComplex && IS_JSON.apply(line)) line = stripJson(line);
+
         line = centeredText(player, parseInteractiveChat(player, line));
-
         List<BaseComponent> components = new ArrayList<>();
-        final TextComponent comp = toComponent(line);
 
-        if (!hover.isEmpty()) addHover(player, comp, hover);
-        if (click != null) {
+        if (isComplex) {
+            final TextComponent comp = toComponent(line);
+            addHover(player, comp, hover);
+
             String[] input = click.split(":", 2);
             addClick(comp, input[0], input[1]);
+            components.add(comp);
+
+            return components.toArray(new BaseComponent[0]);
         }
 
-        components.add(comp);
+        final Matcher match = JSON_PATTERN.matcher(line);
+        int lastEnd = 0;
+
+        while (match.find()) {
+            String extra = match.group(3), before = line.substring(lastEnd, match.start());
+            final TextComponent comp = toComponent(match.group(6));
+
+            components.addAll(Arrays.asList(TextComponent.fromLegacyText(before)));
+            addEvent(player, comp, match.group(1), match.group(2));
+
+            if (extra != null && extra.matches("(?i)\\|" + JSON_PREFIX))
+                addEvent(player, comp, match.group(4), match.group(5));
+
+            components.add(comp);
+            lastEnd = match.end();
+        }
+
+        if (lastEnd < (line.length() - 1)) {
+            final String after = line.substring(lastEnd);
+            components.addAll(Arrays.asList(TextComponent.fromLegacyText(after)));
+        }
+
         return components.toArray(new BaseComponent[0]);
     }
 

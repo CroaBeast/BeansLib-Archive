@@ -77,6 +77,13 @@ public abstract class TextKeys {
     public abstract String langPrefix();
 
     /**
+     * It will fix an RGB issue is some servers that RGB not working correctly.
+     * <p>Example: <strong>JavaPlugin.getConfig().getBoolean("path here")</strong>
+     * @return if this fix is enabled
+     */
+    public abstract boolean fixColorLogger();
+
+    /**
      * If you want to remove spaces at the start of a message.
      * It's recommended to use a boolean from a .yml of your plugin.
      * <p>Example: <strong>JavaPlugin.getConfig().getBoolean("path here")</strong>
