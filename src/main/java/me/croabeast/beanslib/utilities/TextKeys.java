@@ -1,6 +1,7 @@
 package me.croabeast.beanslib.utilities;
 
 import me.croabeast.beanslib.terminals.Bossbar;
+import org.apache.commons.lang.SystemUtils;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,12 +29,6 @@ public abstract class TextKeys {
             + JSON_PREFIX + "(\\|" + JSON_PREFIX + ")?>(.+?)</text>");
 
     /**
-     * Check if a logger line can be colored or not.
-     */
-    protected static final boolean COLOR_SUPPORT =
-            majorVersion() >= 12 && !serverFork().split(" ")[0].matches("(?i)Spigot");
-
-    /**
      * Gets the server's version. Example: 1.8.8, 1.16.5
      * @return server's version
      */
@@ -56,6 +51,23 @@ public abstract class TextKeys {
      */
     public static int majorVersion() {
         return Integer.parseInt(serverVersion().split("\\.")[1]);
+    }
+
+    /**
+     * Checks if the server is in a Windows' environment.
+     * @return if the server is in a Windows system
+     */
+    public static boolean isWindows() {
+        return SystemUtils.OS_NAME.matches("(?i)Windows");
+    }
+
+    /**
+     * Check if a logger line can be colored or not.
+     */
+    protected final boolean loggerColorSupport() {
+        String fork = serverFork().split(" ")[0];
+        return majorVersion() >= 12 && (fork.matches("(?i)Paper") &&
+                isWindows() || !fork.matches("(?i)Spigot|Paper"));
     }
 
     /**

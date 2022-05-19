@@ -52,7 +52,7 @@ public abstract class BeansLib extends TextKeys {
      * @return the formatted console message
      */
     private String colorLogger(@NotNull String line) {
-        return stripJson(COLOR_SUPPORT ? process(line, !fixColorLogger()) : stripAll(line));
+        return stripJson(loggerColorSupport() ? process(line, !fixColorLogger()) : stripAll(line));
     }
 
     /**
