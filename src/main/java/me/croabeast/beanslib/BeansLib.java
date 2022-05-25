@@ -354,25 +354,23 @@ public abstract class BeansLib extends TextKeys {
      * @return the converted json object
      */
     public BaseComponent[] stringToJson(Player player, String line, @Nullable String click, List<String> hover) {
-        boolean isComplex = click != null && !hover.isEmpty();
-        if (isComplex && IS_JSON.apply(line)) line = stripJson(line);
-
         line = centeredText(player, parseInteractiveChat(player, line));
-        List<BaseComponent> components = new ArrayList<>();
 
-        if (isComplex) {
-            final TextComponent comp = toComponent(line);
-            addHover(player, comp, hover);
+        if (!hover.isEmpty() || click != null) {
+            final TextComponent comp = toComponent(stripJson(line));
+            if (!hover.isEmpty()) addHover(player, comp, hover);
 
-            String[] input = click.split(":", 2);
-            addClick(comp, input[0], input[1]);
-            components.add(comp);
+            if (click != null) {
+                String[] input = click.split(":", 2);
+                addClick(comp, input[0], input[1]);
+            }
 
-            return components.toArray(new BaseComponent[0]);
+            return Lists.newArrayList(comp).toArray(new BaseComponent[0]);
         }
 
         final Matcher match = JSON_PATTERN.matcher(line);
         int lastEnd = 0;
+        List<BaseComponent> components = new ArrayList<>();
 
         while (match.find()) {
             String extra = match.group(3), before = line.substring(lastEnd, match.start());
