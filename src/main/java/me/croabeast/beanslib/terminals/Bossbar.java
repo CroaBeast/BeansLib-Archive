@@ -30,8 +30,7 @@ public class Bossbar {
     private Integer time = null;
     private Boolean progress = null;
 
-    protected final Pattern PATTERN = Pattern.compile(
-            "(?i)\\[BOSSBAR(:(.+?)(:(.+?)(:(\\d+)(:(true|false))?)?)?)?](.+)");
+    protected final Pattern PATTERN = Pattern.compile("(?i)\\[bossbar(:(.+))?](.+)");
 
     protected static Map<Player, BossBar> bossbarMap = new HashMap<>();
 
@@ -42,46 +41,12 @@ public class Bossbar {
      * @param player the player that will see the bossbar
      * @param line the bossbar message to validate
      */
-    public Bossbar(JavaPlugin plugin, Player player, @Nullable String line) {
+    public Bossbar(JavaPlugin plugin, Player player, String line) {
         this.plugin = plugin;
         this.player = player;
-        line = line == null ? "" : line;
 
-        Matcher matcher = PATTERN.matcher(line);
-        if (matcher.find()) {
-            try {
-                color = BarColor.valueOf(matcher.group(2).toUpperCase());
-            } catch (Exception e) {
-                color = null;
-            }
-
-            try {
-                style = BarStyle.valueOf(matcher.group(4).toUpperCase());
-            } catch (Exception e) {
-                style = null;
-            }
-
-            try {
-                time = Integer.parseInt(matcher.group(6)) * 20;
-            } catch (Exception e) {
-                style = null;
-            }
-
-            try {
-                progress = Boolean.valueOf(matcher.group(8));
-            } catch (Exception e) {
-                progress = null;
-            }
-
-            this.line = matcher.group(9);
-        }
-
-        if (color == null) color = BarColor.WHITE;
-        if (style == null) style = BarStyle.SOLID;
-        if (time == null) time = 3 * 20;
-        if (progress == null) progress = false;
-
-        this.line = IridiumAPI.process(parsePAPI(player, line));
+        registerValues(PATTERN.matcher(line == null ? "" : line));
+        setDefaultsIfValuesNull();
     }
 
     /**
@@ -95,33 +60,94 @@ public class Bossbar {
      * @param seconds the seconds that the bossbar will be visible
      * @param progress if the bossbar will decrease overtime
      */
-    public Bossbar(JavaPlugin plugin, Player player, @Nullable String line, @Nullable String color, @Nullable String style, int seconds, boolean progress) {
+    public Bossbar(JavaPlugin plugin, Player player, String line, String color, String style, int seconds, boolean progress) {
         this.plugin = plugin;
         this.player = player;
-        this.line = line;
+        this.line = line == null ? "" : line;
 
-        try {
-            if (color == null) color = "";
-            this.color = BarColor.valueOf(color.toUpperCase());
-        } catch (Exception e) {
-            this.color = null;
-        }
+        this.color = ifValidColor(color) ? BarColor.valueOf(color) : BarColor.WHITE;
+        this.style = ifValidStyle(style) ? BarStyle.valueOf(style) : BarStyle.SOLID;
 
-        try {
-            if (style == null) style = "";
-            this.style = BarStyle.valueOf(style.toUpperCase());
-        } catch (Exception e) {
-            this.style = null;
-        }
-
-        this.time = (seconds <= 0 ? 1 : seconds) * 20;
+        if (seconds > 0) this.time = seconds * 20;
         this.progress = progress;
 
-        if (this.color == null) this.color = BarColor.WHITE;
-        if (this.style == null) this.style = BarStyle.SOLID;
+        setDefaultsIfValuesNull();
+    }
+
+    /**
+     * Checks if an input string is a valid {@link BarColor} enum.
+     * @param input an input string
+     * @return if the input string is valid
+     */
+    private boolean ifValidColor(String input) {
+        if (input == null) return false;
+        input = input.toUpperCase();
+
+        for (BarColor c : BarColor.values())
+            if (input.equals(c + "")) return true;
+
+        return false;
+    }
+
+    /**
+     * Checks if an input string is a valid {@link BarStyle} enum.
+     * @param input an input string
+     * @return if the input string is valid
+     */
+    private boolean ifValidStyle(String input) {
+        if (input == null) return false;
+        input = input.toUpperCase();
+
+        for (BarStyle s : BarStyle.values())
+            if (input.equals(s + "")) return true;
+
+        return false;
+    }
+
+    /**
+     * Sets the values to default ones if the input values are null or empty.
+     */
+    private void setDefaultsIfValuesNull() {
+        if (color == null) color = BarColor.WHITE;
+        if (style == null) style = BarStyle.SOLID;
+
+        if (time == null) time = 3 * 20;
+        if (progress == null) progress = false;
 
         if (line == null) line = "";
-        this.line = IridiumAPI.process(parsePAPI(player, line));
+        line = IridiumAPI.process(parsePAPI(player, line));
+    }
+
+    /**
+     * Registers all the values depending on an input {@link Matcher} of the main string line.
+     * @param matcher the requested matcher
+     */
+    private void registerValues(Matcher matcher) {
+        if (!matcher.find()) return;
+
+        String match = matcher.group(2), rawLine = matcher.group(3);
+        line = rawLine == null ? "" : rawLine;
+        if (match == null) return;
+
+        String[] array = match.toUpperCase().split(":", 4);
+
+        int length = array.length;
+        if (length <= 0) return;
+
+        String c = null, st = null, t = null, p = null;
+
+        for (String s : array) {
+            if (ifValidColor(s)) c = s;
+            else if (ifValidStyle(s)) st = s;
+            else if (s.matches("\\d+")) t = s;
+            else if (s.matches("(?i)true|false")) p = s;
+        }
+
+        color = c == null ? BarColor.WHITE : BarColor.valueOf(c);
+        style = st == null ? BarStyle.SOLID : BarStyle.valueOf(st);
+
+        time = (t == null ? 3 : Integer.parseInt(t)) * 20;
+        progress = Boolean.parseBoolean(p);
     }
 
     /**
@@ -176,9 +202,8 @@ public class Bossbar {
      * @return the bossbar, if the player exists or has a bossbar displayed; null otherwise
      */
     @Nullable
-    public static BossBar getBossbar(@Nullable Player player) {
-        if (player == null) return null;
-        return bossbarMap.getOrDefault(player, null);
+    public static BossBar getBossbar(Player player) {
+        return player == null ? null : bossbarMap.getOrDefault(player, null);
     }
 
     /**

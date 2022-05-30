@@ -90,6 +90,7 @@ public abstract class TextKeys {
 
     /**
      * It will fix an RGB issue is some servers that RGB not working correctly.
+     * It's recommended to use a boolean from a .yml of your plugin.
      * <p>Example: <strong>JavaPlugin.getConfig().getBoolean("path here")</strong>
      * @return if this fix is enabled
      */
@@ -110,6 +111,15 @@ public abstract class TextKeys {
      * @return if strip prefix is enabled
      */
     public abstract boolean isStripPrefix();
+
+    /**
+     * The size of the chat box of the player's client for centered chat messages.
+     * <p>This can be overridden, if you want to set a custom value.
+     * @return chat box's size
+     */
+    public int chatBoxSize() {
+        return 154;
+    }
 
     /**
      * The center prefix to define a center chat message.
@@ -153,6 +163,7 @@ public abstract class TextKeys {
 
     /**
      * The character regex pattern that replace the specified char.
+     * This regex should have only 1 group to catch.
       * @return char pattern
      */
     @NotNull
