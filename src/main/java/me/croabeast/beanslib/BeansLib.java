@@ -1,7 +1,7 @@
 package me.croabeast.beanslib;
 
 import com.google.common.collect.*;
-import com.loohp.interactivechat.api.InteractiveChatAPI;
+import com.loohp.interactivechat.api.*;
 import me.clip.placeholderapi.*;
 import me.croabeast.beanslib.terminals.*;
 import me.croabeast.beanslib.utilities.*;
@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.function.*;
 import java.util.regex.*;
 
+import static me.croabeast.beanslib.utilities.TextUtils.*;
 import static me.croabeast.iridiumapi.IridiumAPI.*;
 import static net.md_5.bungee.api.chat.ClickEvent.Action.*;
 
@@ -127,41 +128,14 @@ public abstract class BeansLib extends TextKeys {
     }
 
     /**
-     * Parses the placeholders from {@link PlaceholderAPI} if is enabled.
-     * @param player a player, can be null
-     * @param message the input line
-     * @return the parsed message
-     */
-    public static String parsePAPI(@Nullable Player player, String message) {
-        return Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI") ?
-                PlaceholderAPI.setPlaceholders(player, message) : message;
-    }
-
-    /**
-     * Replace a {@link String} array of keys with another {@link String} array of values.
-     * <p> It's case-insensitive and special characters are quoted to avoid errors.
-     * @param line the input line
-     * @param keys the array of keys
-     * @param values the array of values
-     * @return the parsed line with the respective values
-     */
-    public static String replaceInsensitiveEach(String line, String[] keys, String[] values) {
-        if (keys == null || values == null) return line;
-        for (int i = 0; i < keys.length; i++) {
-            if (keys[i] == null | values[i] == null) continue;
-            keys[i] = Pattern.quote(keys[i]);
-            line = line.replaceAll("(?i)" + keys[i], values[i]);
-        }
-        return line;
-    }
-
-    /**
      * Use the {@link #charPattern()} to find unicode values and
      * replace them with its respective characters.
      * @param line the input line
      * @return the parsed message with the new characters
      */
     public String parseChars(String line) {
+        if (line == null || line.length() == 0) return line;
+
         Pattern charPattern = Pattern.compile(charPattern());
         Matcher match = charPattern.matcher(line);
 
@@ -176,7 +150,7 @@ public abstract class BeansLib extends TextKeys {
      * Parses the requested message using:
      * <blockquote><pre>
      * 1. First, parses characters using {@link #parseChars(String)}
-     * 2. Then, parses {@link PlaceholderAPI} placeholders using {@link #parsePAPI(Player, String)}
+     * 2. Then, parses {@link PlaceholderAPI} placeholders using {@link TextUtils#parsePAPI(Player, String)}
      * 3. Finally, applies color format using {@link IridiumAPI#process(String)}.</pre></blockquote>
      * @param player a player, can be null
      * @param message the input message
@@ -184,19 +158,6 @@ public abstract class BeansLib extends TextKeys {
      */
     public String colorize(@Nullable Player player, String message) {
         return IridiumAPI.process(parsePAPI(player, parseChars(message)));
-    }
-
-    /**
-     * Converts a {@link String} to a {@link List<String>} from
-     * a config file or section if it's not a list.
-     * @param section a config file or section, can be null
-     * @param path the path to locate the string or list
-     * @return the converted string list or an empty list if section is null
-     */
-    public static List<String> toList(@Nullable ConfigurationSection section, String path) {
-        if (section == null) return new ArrayList<>();
-        return  section.isList(path) ? section.getStringList(path) :
-                Lists.newArrayList(section.getString(path));
     }
 
     /**
@@ -252,27 +213,11 @@ public abstract class BeansLib extends TextKeys {
     }
 
     /**
-     * Check if the line has a valid json format. Usage:
-     * <pre> if (IS_JSON.apply(stringInput)) doSomethingIdk();</pre>
-     */
-    public static final Function<String, Boolean> IS_JSON = s -> JSON_PATTERN.matcher(s).find();
-
-    /**
-     * Strips the JSON format from a line.
-     * @param line the line to strip.
-     * @return the stripped line.
-     */
-    public static String stripJson(String line) {
-        return line.replaceAll("(?i)</?(text|hover|run|suggest|url)" +
-                "(=\\[(.+?)](\\|(hover|run|suggest|url)=\\[(.+?)])?)?>", "");
-    }
-
-    /**
      * Converts a string to a TextComponent.
      * @param line the line to convert.
      * @return the requested component.
      */
-    private static TextComponent toComponent(String line) {
+    private TextComponent toComponent(String line) {
         return new TextComponent(TextComponent.fromLegacyText(line));
     }
 
@@ -315,24 +260,6 @@ public abstract class BeansLib extends TextKeys {
         if (type.matches("(?i)run|suggest|url")) addClick(comp, type, input);
         else if (type.matches("(?i)hover"))
             addHover(player, comp, Arrays.asList(input.split(lineSeparator())));
-    }
-
-    /**
-     * Parse InteractiveChat placeholders for using it the Json message.
-     * @param player the requested player
-     * @param line the line to parse
-     * @return the line with the parsed placeholders.
-     */
-    public static String parseInteractiveChat(Player player, String line) {
-        if (Bukkit.getPluginManager().isPluginEnabled("InteractiveChat"))
-            try {
-                return InteractiveChatAPI.markSender(line, player.getUniqueId());
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-                return line;
-            }
-        else return line;
     }
 
     /**
@@ -468,7 +395,7 @@ public abstract class BeansLib extends TextKeys {
 
     /**
      * Sends a message list using {@link #sendMessage(Player, Player, String)}.
-     * Parse keys and values using {@link #replaceInsensitiveEach(String, String[], String[])}
+     * Parse keys and values using {@link TextUtils#replaceInsensitiveEach(String, String[], String[])}
      * @param sender a player to format and send the message
      * @param list the message list
      * @param keys a keys array

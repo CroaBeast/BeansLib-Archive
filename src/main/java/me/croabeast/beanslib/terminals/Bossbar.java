@@ -1,21 +1,17 @@
 package me.croabeast.beanslib.terminals;
 
-import me.croabeast.iridiumapi.IridiumAPI;
-import org.bukkit.Bukkit;
-import org.bukkit.boss.BarColor;
-import org.bukkit.boss.BarStyle;
-import org.bukkit.boss.BossBar;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.jetbrains.annotations.Nullable;
+import me.croabeast.iridiumapi.*;
+import org.bukkit.*;
+import org.bukkit.boss.*;
+import org.bukkit.entity.*;
+import org.bukkit.plugin.java.*;
+import org.bukkit.scheduler.*;
+import org.jetbrains.annotations.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.*;
+import java.util.regex.*;
 
-import static me.croabeast.beanslib.BeansLib.*;
+import static me.croabeast.beanslib.utilities.TextUtils.*;
 
 public class Bossbar {
 
@@ -105,20 +101,6 @@ public class Bossbar {
     }
 
     /**
-     * Sets the values to default ones if the input values are null or empty.
-     */
-    private void setDefaultsIfValuesNull() {
-        if (color == null) color = BarColor.WHITE;
-        if (style == null) style = BarStyle.SOLID;
-
-        if (time == null) time = 3 * 20;
-        if (progress == null) progress = false;
-
-        if (line == null) line = "";
-        line = IridiumAPI.process(parsePAPI(player, line));
-    }
-
-    /**
      * Registers all the values depending on an input {@link Matcher} of the main string line.
      * @param matcher the requested matcher
      */
@@ -151,9 +133,23 @@ public class Bossbar {
     }
 
     /**
+     * Sets the values to default ones if the input values are null or empty.
+     */
+    private void setDefaultsIfValuesNull() {
+        if (color == null) color = BarColor.WHITE;
+        if (style == null) style = BarStyle.SOLID;
+
+        if (time == null) time = 3 * 20;
+        if (progress == null) progress = false;
+
+        if (line == null) line = "";
+        line = IridiumAPI.process(parsePAPI(player, line));
+    }
+
+    /**
      * Unregisters the bossbar from the player.
      */
-    private void unregister() {
+    public void unregister() {
         bar.removePlayer(player);
         bossbarMap.remove(player);
         bar = null;
@@ -162,7 +158,7 @@ public class Bossbar {
     /**
      * Animates the bossbar when the progress is enabled.
      */
-    private void animate() {
+    public void animate() {
         double time = 1.0D / this.time;
         double[] percentage = {1.0D};
 

@@ -25,7 +25,7 @@ public abstract class TextKeys {
      * The main pattern to identify the JSON message.
      * This can't be overridden.
      */
-    protected static final Pattern JSON_PATTERN = Pattern.compile("(?i)<"
+    public static final Pattern JSON_PATTERN = Pattern.compile("(?i)<"
             + JSON_PREFIX + "(\\|" + JSON_PREFIX + ")?>(.+?)</text>");
 
     /**

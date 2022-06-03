@@ -22,7 +22,7 @@ public class CharInfo {
      * Gets the character.
      * @return the char
      */
-    private char getCharacter() {
+    public char getCharacter() {
         return character;
     }
 
