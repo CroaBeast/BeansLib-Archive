@@ -32,7 +32,7 @@ public final class IridiumAPI {
      * Color regex strings to check.
      */
     private static final String
-            BUKKIT_REGEX = "[&§][a-f\\dk-or]", GRADIENT_REGEX = "</?[gr](:\\d{3,6})?>",
+            BUKKIT_REGEX = "[&§][a-f\\dk-or]", GRADIENT_REGEX = "</?[gr](:\\d{1,3})?>",
             RGB_REGEX = "\\{#[\\dA-F]{6}}|<#[\\dA-F]{6}>|&#[\\dA-F]{6}|#[\\dA-F]{6}",
             COLOR_REGEX = "(?i)" + BUKKIT_REGEX + "|" + GRADIENT_REGEX + "|" + RGB_REGEX;
 

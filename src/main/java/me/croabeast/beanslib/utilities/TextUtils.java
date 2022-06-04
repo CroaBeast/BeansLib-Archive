@@ -12,8 +12,9 @@ import java.util.*;
 import java.util.function.*;
 import java.util.regex.*;
 
-import static me.croabeast.beanslib.utilities.TextKeys.*;
-
+/**
+ * The class for static methods.
+ */
 public class TextUtils {
 
     /**
@@ -41,7 +42,12 @@ public class TextUtils {
 
         for (int i = 0; i < keys.length; i++) {
             if (keys[i] == null | values[i] == null) continue;
-            line = line.replaceAll("(?i)" + Pattern.quote(keys[i]), values[i]);
+            String newKey = Pattern.quote(keys[i]);
+
+            Matcher matcher = Pattern.compile("(?i)" + newKey).matcher(line);
+            if (!matcher.find()) continue;
+
+            line = line.replace(matcher.group(), values[i]);
         }
         return line;
     }
@@ -63,7 +69,7 @@ public class TextUtils {
      * Check if the line has a valid json format. Usage:
      * <pre> if (IS_JSON.apply(stringInput)) doSomethingIdk();</pre>
      */
-    public static final Function<String, Boolean> IS_JSON = s -> JSON_PATTERN.matcher(s).find();
+    public static final Function<String, Boolean> IS_JSON = s -> TextKeys.JSON_PATTERN.matcher(s).find();
 
     /**
      * Strips the JSON format from a line.

@@ -1,12 +1,10 @@
 package me.croabeast.beanslib;
 
 import com.google.common.collect.*;
-import com.loohp.interactivechat.api.*;
 import me.clip.placeholderapi.*;
 import me.croabeast.beanslib.terminals.*;
 import me.croabeast.beanslib.utilities.*;
-import me.croabeast.beanslib.utilities.chars.CharInfo;
-import me.croabeast.beanslib.utilities.chars.Handler;
+import me.croabeast.beanslib.utilities.chars.*;
 import me.croabeast.iridiumapi.*;
 import net.md_5.bungee.api.chat.*;
 import org.bukkit.*;
@@ -17,7 +15,6 @@ import org.bukkit.plugin.java.*;
 import org.jetbrains.annotations.*;
 
 import java.util.*;
-import java.util.function.*;
 import java.util.regex.*;
 
 import static me.croabeast.beanslib.utilities.TextUtils.*;
@@ -357,7 +354,7 @@ public abstract class BeansLib extends TextKeys {
         Matcher matcher = textPattern().matcher(input);
 
         if (matcher.find()) {
-            String prefix = removeSpace(matcher.group(1).substring(1, matcher.group(1).length() - 1));
+            String pr = matcher.group(1), prefix = removeSpace(pr.substring(1, pr.length() - 1));
             String line = colorize(sender, removeSpace(input.substring(prefix.length() + 2)));
 
             if (prefix.matches("(?i)" + titleKey())) {
@@ -386,8 +383,7 @@ public abstract class BeansLib extends TextKeys {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
             }
             else if (prefix.matches("(?i)" + actionBarKey())) sendActionBar(target, line);
-            else if (prefix.matches("(?i)" + bossbarKey()))
-                new Bossbar(getPlugin(), target, line).display();
+            else if (prefix.matches("(?i)" + bossbarKey())) new Bossbar(getPlugin(), target, input).display();
             else target.spigot().sendMessage(stringToJson(sender, line));
         }
         else target.spigot().sendMessage(stringToJson(sender, input));
@@ -407,9 +403,7 @@ public abstract class BeansLib extends TextKeys {
         for (String line : list) {
             if (line == null || line.equals("")) continue;
 
-            line = line.startsWith(langPrefixKey()) ?
-                    line.replace(langPrefixKey(), langPrefix()) : line;
-
+            line = line.startsWith(langPrefixKey()) ? line.replace(langPrefixKey(), langPrefix()) : line;
             line = replaceInsensitiveEach(line, keys, values);
 
             if (sender != null && !(sender instanceof ConsoleCommandSender)) {
