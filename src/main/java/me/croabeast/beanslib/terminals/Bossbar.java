@@ -26,7 +26,7 @@ public class Bossbar {
     private Integer time = null;
     private Boolean progress = null;
 
-    protected final Pattern PATTERN = Pattern.compile("(?i)\\[bossbar(:(.+))?](.+)");
+    protected final Pattern PATTERN = Pattern.compile("(?i)(\\[bossbar(:.+)?])(.+)");
 
     protected static Map<Player, BossBar> bossbarMap = new HashMap<>();
 
@@ -41,7 +41,7 @@ public class Bossbar {
         this.plugin = plugin;
         this.player = player;
 
-        registerValues(PATTERN.matcher(line == null ? "" : line));
+        registerValues(line == null ? "" : line);
         setDefaultsIfValuesNull();
     }
 
@@ -101,17 +101,23 @@ public class Bossbar {
     }
 
     /**
-     * Registers all the values depending on an input {@link Matcher} of the main string line.
-     * @param matcher the requested matcher
+     * Registers all the values depending on an input string line.
+     * @param input an input string
      */
-    private void registerValues(Matcher matcher) {
-        if (!matcher.find()) return;
+    private void registerValues(String input) {
+        Matcher matcher = PATTERN.matcher(input);
+        if (!matcher.find()) {
+            line = input;
+            return;
+        }
 
-        String match = matcher.group(2), rawLine = matcher.group(3);
-        line = rawLine == null ? "" : rawLine;
-        if (match == null) return;
+        line = input.substring(matcher.group(1).length() + 1);
 
-        String[] array = match.toUpperCase().split(":", 4);
+        String arguments = matcher.group(2);
+        if (arguments == null) return;
+
+        String prefix = arguments.substring(1);
+        String[] array = prefix.toUpperCase().split(":", 4);
 
         int length = array.length;
         if (length <= 0) return;
@@ -119,10 +125,10 @@ public class Bossbar {
         String c = null, st = null, t = null, p = null;
 
         for (String s : array) {
-            if (ifValidColor(s)) c = s;
+            if (s.matches("(?i)true|false")) p = s;
+            else if (ifValidColor(s)) c = s;
             else if (ifValidStyle(s)) st = s;
             else if (s.matches("\\d+")) t = s;
-            else if (s.matches("(?i)true|false")) p = s;
         }
 
         color = c == null ? BarColor.WHITE : BarColor.valueOf(c);
