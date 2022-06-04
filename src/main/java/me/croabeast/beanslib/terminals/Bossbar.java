@@ -41,8 +41,10 @@ public class Bossbar {
         this.plugin = plugin;
         this.player = player;
 
+        if (player == null)
+            throw new NullPointerException("Player cannot be null, you fool.");
+
         registerValues(line == null ? "" : line);
-        setDefaultsIfValuesNull();
     }
 
     /**
@@ -60,6 +62,9 @@ public class Bossbar {
         this.plugin = plugin;
         this.player = player;
         this.line = line == null ? "" : line;
+
+        if (player == null)
+            throw new NullPointerException("Player cannot be null, you fool.");
 
         this.color = ifValidColor(color) ? BarColor.valueOf(color) : BarColor.WHITE;
         this.style = ifValidStyle(style) ? BarStyle.valueOf(style) : BarStyle.SOLID;
@@ -80,7 +85,7 @@ public class Bossbar {
         input = input.toUpperCase();
 
         for (BarColor c : BarColor.values())
-            if (input.equals(c + "")) return true;
+            if (input.matches("(?i)" + c)) return true;
 
         return false;
     }
@@ -95,7 +100,7 @@ public class Bossbar {
         input = input.toUpperCase();
 
         for (BarStyle s : BarStyle.values())
-            if (input.equals(s + "")) return true;
+            if (input.matches("(?i)" + s)) return true;
 
         return false;
     }
@@ -111,16 +116,15 @@ public class Bossbar {
             return;
         }
 
-        line = input.substring(matcher.group(1).length() + 1);
+        line = matcher.group(3);
 
         String arguments = matcher.group(2);
         if (arguments == null) return;
 
-        String prefix = arguments.substring(1);
-        String[] array = prefix.toUpperCase().split(":", 4);
+        String[] array = arguments.substring(1).split(":");
 
         int length = array.length;
-        if (length <= 0) return;
+        if (length <= 0 || length > 4) return;
 
         String c = null, st = null, t = null, p = null;
 
@@ -131,11 +135,13 @@ public class Bossbar {
             else if (s.matches("\\d+")) t = s;
         }
 
-        color = c == null ? BarColor.WHITE : BarColor.valueOf(c);
-        style = st == null ? BarStyle.SOLID : BarStyle.valueOf(st);
+        color = c == null ? null : BarColor.valueOf(c);
+        style = st == null ? null : BarStyle.valueOf(st);
 
-        time = (t == null ? 3 : Integer.parseInt(t)) * 20;
-        progress = Boolean.parseBoolean(p);
+        time = t == null ? null : Integer.parseInt(t) * 20;
+        progress = p == null ? null : Boolean.parseBoolean(p);
+
+        setDefaultsIfValuesNull();
     }
 
     /**
