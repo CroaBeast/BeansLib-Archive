@@ -45,6 +45,7 @@ public class Bossbar {
             throw new NullPointerException("Player cannot be null, you fool.");
 
         registerValues(line == null ? "" : line);
+        setDefaultsIfValuesNull();
     }
 
     /**
@@ -140,8 +141,6 @@ public class Bossbar {
 
         time = t == null ? null : Integer.parseInt(t) * 20;
         progress = p == null ? null : Boolean.parseBoolean(p);
-
-        setDefaultsIfValuesNull();
     }
 
     /**
